@@ -5,6 +5,9 @@ from fastapi import FastAPI, status
 from pydantic import BaseModel
 from typing import List
 
+DB = "slack"
+MSG_COLLECTION = "messages"
+
 # Message class defined in Pydantic
 class Message(BaseModel):
     channel: str
@@ -25,33 +28,29 @@ def get_status():
 @app.get("/channels", response_model=List[str])
 def get_channels():
     """Get all channels in list form."""
-    msg_collection = get_message_collection()
-    distinct_channel_list = msg_collection.distinct("channel")
-    return distinct_channel_list
+    with MongoClient() as client:
+        msg_collection = client[DB][MSG_COLLECTION]
+        distinct_channel_list = msg_collection.distinct("channel")
+        return distinct_channel_list
 
 
 @app.get("/messages/{channel}", response_model=List[Message])
 def get_messages(channel: str):
     """Get all messages for the specified channel."""
-    msg_collection = get_message_collection()
-    msg_list = msg_collection.find({"channel": channel})
-    response_msg_list = []
-    for msg in msg_list:
-        response_msg_list.append(Message(**msg))
-    return response_msg_list
+    with MongoClient() as client:
+        msg_collection = client[DB][MSG_COLLECTION]
+        msg_list = msg_collection.find({"channel": channel})
+        response_msg_list = []
+        for msg in msg_list:
+            response_msg_list.append(Message(**msg))
+        return response_msg_list
 
 
 @app.post("/post_message", status_code=status.HTTP_201_CREATED)
 def post_message(message: Message):
     """Post a new message to the specified channel."""
-    msg_collection = get_message_collection()
-    result = msg_collection.insert_one(message.dict())
-    ack = result.acknowledged
-    return {"insertion": ack}
-
-
-def get_message_collection():
-    client = MongoClient()
-    db = client["slack"]
-    msg_collection = db["messages"]
-    return msg_collection
+    with MongoClient() as client:
+        msg_collection = client[DB][MSG_COLLECTION]
+        result = msg_collection.insert_one(message.dict())
+        ack = result.acknowledged
+        return {"insertion": ack}
