@@ -1,0 +1,2 @@
+uvicorn essentials.chapter9.slack_mongo:app --reload
+
