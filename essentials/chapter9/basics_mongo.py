@@ -13,11 +13,7 @@ db = client["slack"]
 msg_collection = db["messages"]
 
 # Create a message dict
-message = {
-    "channel": "dev",
-    "author": "cerami",
-    "text": "Hello, world!"
-}
+message = {"channel": "dev", "author": "cerami", "text": "Hello, world!"}
 
 # Insert One Record and Show the Inserted ID
 # To insert multiple records at once, use insert_many()

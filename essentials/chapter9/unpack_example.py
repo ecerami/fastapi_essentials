@@ -15,9 +15,12 @@ print(person)
 
 person_dict = {"first": "Bruce", "last": "Wayne", "zip_code": "10021"}
 
-person = Person(first=person_dict["first"], last=person_dict["last"],
-    zip_code=person_dict["zip_code"])
-    
+person = Person(
+    first=person_dict["first"],
+    last=person_dict["last"],
+    zip_code=person_dict["zip_code"],
+)
+
 print(person)
 
 person = Person(**person_dict)

@@ -8,6 +8,7 @@ from typing import List
 DB = "slack"
 MSG_COLLECTION = "messages"
 
+
 # Message class defined in Pydantic
 class Message(BaseModel):
     channel: str
